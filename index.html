@@ -563,27 +563,20 @@
             // 1. Create the STAR (Index 0)
             createParticle('STAR');
 
-            // 2. Load images logic (try png -> jpg -> jpeg)
-            function tryLoadImageVariants(idx) {
-                const variants = [`.png`, `.jpg`, `.jpeg`];
-                let attempt = 0;
-
-                function tryNext() {
-                    if (attempt >= variants.length) return; // give up silently
-                    const path = `./images/${idx}${variants[attempt]}`;
-                    textureLoader.load(path, (tex) => {
-                        tex.colorSpace = THREE.SRGBColorSpace;
-                        addPhotoToScene(tex);
-                    }, undefined, () => {
-                        attempt++;
-                        tryNext();
-                    });
-                }
-                tryNext();
+            // 2. Load images with explicit png path: images/0.png, images/1.png, ...
+            function tryLoadImagePNG(idx) {
+                const path = `./images/${idx}.png`;
+                textureLoader.load(path, (tex) => {
+                    tex.colorSpace = THREE.SRGBColorSpace;
+                    addPhotoToScene(tex);
+                }, undefined, () => {
+                    // If the specific PNG isn't found, fall back to default photo
+                    addPhotoToScene(createDefaultPhoto());
+                });
             }
 
-            for (let i = 1; i <= 20; i++) {
-                tryLoadImageVariants(i);
+            for (let i = 1; i <= 10; i++) {
+                tryLoadImagePNG(i);
             }
             
             // 3. Fill the rest
